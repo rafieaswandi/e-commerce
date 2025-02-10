@@ -1,17 +1,25 @@
-"use client"
+"use client";
 import Config from "@/core/config";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { IoCartOutline, IoSearchCircleOutline} from "react-icons/io5";
 import { TiUserOutline } from "react-icons/ti";
-import { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
-
+    const router = useRouter(); // Initialize useRouter
+  
     const toggleMenu = () => {
-        setOpen(!open);
-    }
+      setOpen(!open);
+    };
+  
+    const logout = () => {
+        localStorage.removeItem("token");
+        router.push("/login");
+    };
+
     return (
         <header className="flex justify-between items-center px-6 py-4 sticky top-0 z-30 bg-white shadow">
             <Link href="/" className="flex items-center">
@@ -43,7 +51,7 @@ export default function Navbar() {
                 <Link href="/register" className="py-2 px-4 hover:bg-gray-100 text-start">Sign up</Link>
                 <Link href="/profile" className="py-2 px-4 hover:bg-gray-100 text-start">Profile</Link>
                 <Link href="/order" className="py-2 px-4 hover:bg-gray-100 text-start">My order</Link>
-                <button type="button" className="py-2 px-4 hover:bg-gray-100 text-start">Logout</button>
+                <button type="button" onClick={logout} className="py-2 px-4 hover:bg-gray-100 text-start">Logout</button>
             </div>
         </header>
     );

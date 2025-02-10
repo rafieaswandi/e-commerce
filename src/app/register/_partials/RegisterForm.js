@@ -8,19 +8,68 @@ import { LuLogIn } from "react-icons/lu";
 import { IoIosEyeOff } from "react-icons/io";
 import { IoIosEye } from "react-icons/io";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function RegisterForm() {
+    const router = useRouter;
     const [obscurePassword, setObscurePassword] = useState(true);
-
+    const [obscurePass, setObsConfirmPass] = useState(true);
+    const [errors, setErrors] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+  
     const toggleObscurePassword = () => {
-        setObscurePassword(!obscurePassword);
+      setObscurePassword(!obscurePassword);
     };
-
-    const [obscureConfirmPassword, setObscureConfirmPassword] = useState(true);
-
-    const toggleObscureConfirmPassword = () => {
-        setObscureConfirmPassword(!obscureConfirmPassword);
+  
+    const toggleObsConfirmPassword = () => {
+      setObsConfirmPass(!obscurePass);
     };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      setErrors(null);
+      try {
+        // 
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error("Passwords and confrim passwords doesn't match.");
+        }
+  
+        const res = await fetch(Config.baseApiUrl() + "register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+          },
+          body: JSON.stringify(formData),
+        });
+        const result = await res.json();
+  
+        if (!res.ok) {
+          throw new Error(result.message);
+        }
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+  
+        localStorage.setItem("token", result.data.token);
+        router.push("/");
+    
+      } catch (error) {
+        setErrors(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };    
 
     return (
         <form className="w-full md:w-1/2 flex flex-col justify-center items-center gap-4">
@@ -51,7 +100,7 @@ export default function RegisterForm() {
             </div>
             <div className="w-2/3 relative">
                 <CustomInput 
-                    type={obscureConfirmPassword ? "password" : "text"}
+                    type={toggleObsConfirmPassword ? "password" : "text"}
                     id="confirm-password"
                     name="confirm-password"
                     placeholder="Confirm your password" 
@@ -61,7 +110,7 @@ export default function RegisterForm() {
                 <button 
                     type="button"
                     className="absolute top-1/2 right-4 -translate-y-1/2"
-                    onClick={toggleObscureConfirmPassword}
+                    onClick={toggleObsConfirmPassword}
                 >
                     {obscurePassword ? <IoIosEyeOff /> : <IoIosEye />}
                 </button>

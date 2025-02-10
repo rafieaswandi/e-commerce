@@ -8,12 +8,58 @@ import { LuLogIn } from "react-icons/lu";
 import { IoIosEyeOff } from "react-icons/io";
 import { IoIosEye } from "react-icons/io";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function LoginForm() {
     const [obscurePassword, setObscurePassword] = useState(true);
-
+    const router = useRouter;
+    const [errors, setErrors] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+      email: "",
+      password: "",
+    });
+  
     const toggleObscurePassword = () => {
-        setObscurePassword(!obscurePassword);
+      setObscurePassword(!obscurePassword);
+    };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      setErrors(null);
+      try {
+        // 
+        // if (formData.password !== formData.confirmPassword) {
+        //   throw new Error("Passwords and confrim passwords doesn't match.");
+        // }
+  
+        const res = await fetch(Config.baseApiUrl() + "login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+          },
+          body: JSON.stringify(formData),
+        });
+        const result = await res.json();
+  
+        if (!res.ok) {
+          throw new Error(result.message || "login failed");
+        }
+        setFormData({
+          email: "",
+          password: "",
+        });
+  
+        localStorage.setItem("token", result.data.token);
+        router.push("/");
+    
+      } catch (error) {
+        setErrors(error.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
     return (

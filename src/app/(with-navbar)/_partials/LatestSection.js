@@ -1,19 +1,31 @@
 import ProductCard from "@/components/ProductCard";
-export default function LatestSection() {
+import Config from "@/core/config";
+export default async function LatestSection() {
+    const data = await fetch(Config.baseApiUrl() + "product?sortBy=created_at&order=desc", {
+        headers: {
+            "x-api-key": process.env.API_KEY,
+        },
+        method: "GET",
+    }).then((res) => res.json());
+    // console.log(data);
+
     return (
         <section className="py-10 bg-dark text-white">
             <h2 className="text-4xl font-bold text-center uppercase mb-10">
                 New Arrival
             </h2>
             <div className="flex gap-4 overflow-x-auto">
+            {data.data.map((product) => (
                 <ProductCard
-                href={"#"}
-                image="/card1.png"
-                category="Panzerwaffen"
-                name="Panzerkamfpwagen VII Lowe"
-                rating={19.45}
-                price={500000000000}
+                key={product.name}
+                href={`/product/${product.slug}`}
+                image={Config.baseUrl() + product.img_urls[0]}
+                category={product.category_name}
+                name={product.name}
+                rating={product.rating}
+                price={product.price}
                 />
+            ))}
             </div>
         </section>
     );
