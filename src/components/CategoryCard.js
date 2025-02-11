@@ -3,7 +3,7 @@ import Link from "next/link"
 
 export default function CategoryCard({name, image, href }) {
     return (
-        <Link href="#" className="aspect-[4/5] relative group">
+        <Link href={href} className="aspect-[4/5] relative group">
         <Image
         src={image} 
         alt={name} 

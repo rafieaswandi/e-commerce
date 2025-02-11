@@ -3,6 +3,7 @@ import { Card, CardContent } from "./_partials/card";
 import { Button } from "./_partials/button";
 import { Input } from "./_partials/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./_partials/tabs";
+import LatestSection from "../_partials/LatestSection";
 
 const ProfilePage = () => {
   return (
@@ -12,6 +13,7 @@ const ProfilePage = () => {
       <Card className="mb-6">
         <CardContent>
           <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
+          
           <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="name">

@@ -6,14 +6,14 @@ export default async function CategorySection() {
         headers: {
             "x-api-key": process.env.API_KEY
         }
-    }) .then((res) => res.json())
+    }).then((res) => res.json())
     // console.log(data);
     return (
         <section className="py-6">
             <h2 className="text-2xl font-bold text-center uppercase mt-4 mb-4">Categories</h2>
             <div className="grid grid-cols-2 sm:grid-cols-5">
                 {data.data.map((category) => (
-                    <CategoryCard key={category.name} name={category.name} image={Config.baseUrl() + category.img_url} href={"#"} />
+                    <CategoryCard key={category.name} name={category.name} image={Config.baseUrl() + category.img_url} href={`/category/${category.slug}`} />
                 ))}
             </div>
         </section>
