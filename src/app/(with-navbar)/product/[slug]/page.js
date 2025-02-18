@@ -1,10 +1,10 @@
-"use client"
 import Config from "@/core/config";
 import { FaStar } from "react-icons/fa";
-import ProductImages from "./_partials/ProductImages";
 import { formatCurrency } from "@/core/helpers";
-import OrderAction from "./_partials/OrderAction";
 import { Fragment } from "react";
+import ProductImages from "./_partials/ProductImages";
+import OrderAction from "./_partials/OrderAction";
+
 
 export default async function ProductPage({params}) {
     const slug = await params.slug;
@@ -18,7 +18,7 @@ export default async function ProductPage({params}) {
     console.log(data);
 
     return (
-        <Fragment>
+    <Fragment>
         <section className="p-10 grid grid-cols-1 md:grid-cols-2 gap-10">
             <ProductImages images={data.data.img_urls} />
             <div className="space-y-2">

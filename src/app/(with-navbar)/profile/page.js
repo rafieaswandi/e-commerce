@@ -1,76 +1,73 @@
-"use client"
-import React, { useState, useEffect } from "react";
+"use client";
 
-export default function ProfilePage() {
-  
-  const [user, setUser] = useState(null); 
-  const [isLoading, setIsLoading] = useState(true); 
-  const [error, setError] = useState(null);
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/user-profile`,
-          {
-            headers: {
-              "Authorization": `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`,
-            },
-          }
-        );
+import { useAuth } from "@/core/useAuth";
+import { useRouter } from "next/navigation";
+import { Fragment } from "react";
+import { FaUserEdit, FaSignOutAlt } from "react-icons/fa";
+import Image from "next/image";
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
+export default function Profile() {
+  const user = useAuth();
+  const router = useRouter();
 
-        const data = await response.json();
-        setUser(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fungsi Logout
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Hapus token
+    router.push("/login"); // Redirect ke login
+  };
 
-    fetchUserProfile();
-  }, []);
-
-  if (isLoading) {
-    return <p className="text-center mt-10 text-lg">Loading...</p>;
-  }
-
-  if (error) {
+  if (!user) {
     return (
-      <p className="text-center mt-10 text-red-500">
-        Error: {error}. Please try again later.
-      </p>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="p-6 bg-white shadow-lg rounded-lg text-center">
+          <p className="text-red-500 font-semibold">Anda belum login. Silakan masuk terlebih dahulu.</p>
+          <button
+            onClick={() => router.push("/login")}
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            Login
+          </button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mt-4">My Profile</h1>
-      <div className="mt-8 flex flex-col items-center">
-        <div className="relative">
-          <img
-            src={user.profileImage || "https://via.placeholder.com/150"}
-            alt="Profile"
-            className="w-32 h-32 rounded-full object-cover shadow-md"
-          />
-        </div>
-        <div className="mt-6 bg-white shadow-lg rounded-2xl p-6 w-80">
-          <h2 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">
-            Personal Information
-          </h2>
-          <div className="mb-4">
-            <p className="text-sm text-gray-500">Full Name</p>
-            <p className="text-lg font-medium text-gray-700">{user.fullName}</p>
+    <Fragment>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-400 to-indigo-600 p-4">
+        <div className="p-8 bg-white shadow-lg rounded-lg w-full max-w-md text-center">
+          {/* Avatar */}
+          <div className="relative w-24 h-24 mx-auto mb-4">
+            <Image
+              src={user.avatar || "/profile.png"}
+              alt="Profile Picture"
+              fill
+              className="rounded-full border-4 border-gray-300 object-cover"
+            />
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Email</p>
-            <p className="text-lg font-medium text-gray-700">{user.email}</p>
+
+          {/* Nama & Email */}
+          <h1 className="text-2xl font-semibold text-gray-900">{user.name || "Nama Pengguna"}</h1>
+          <p className="text-gray-600">{user.email || "Email tidak tersedia"}</p>
+
+          {/* Tombol */}
+          <div className="mt-6 flex justify-center gap-4">
+            <button
+              className="flex items-center bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 transition"
+              onClick={() => router.push("/profile/edit")}
+            >
+              <FaUserEdit className="mr-2" /> Edit Profil
+            </button>
+
+            <button
+              className="flex items-center bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition"
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt className="mr-2" /> Logout
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </Fragment>
   );
 }
